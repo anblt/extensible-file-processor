@@ -29,6 +29,26 @@ Command-line tool for batch-processing files of arbitrary type, that includes it
 
 This example demonstrates usage of different FileProcessor built-in plugins. It takes a textfile contaning a list of java-files and injects some static import statements by modifying the AbstractSyntaxTree (AST) of the corresponding Java-Code. Then it compares the original java-file with the rewritten one and outputs the diff to stderr.
 
+- [FileProcessorTest.java](src/anblt/tests/FileProcessorTest.java) code includes code like
+
+    ```
+    // create new instance of FileProcessor with 5 plugins
+    // each of which is able to consume and produce 0..* files.
+    // Every plugin is annotated, according to it's capabilities.
+    FileProcessor fileproc = new FileProcessor(filelist, inject, copy, diff, stderr);
+
+    // define dependency structure
+    fileproc.addDependency(filelist, copy);
+    fileproc.addDependency(filelist, inject);
+    fileproc.addDependency(inject, diff);
+    fileproc.addDependency(copy, diff);
+    fileproc.addDependency(diff, stderr);
+
+    // start processing given file
+    fileproc.addItem(file);
+    List<File> result = inject.getResult();    
+    ```
+
 - this JUnit.TestCase sets-up the following dependency graph …
 
   ![DependencyGraph](https://raw.githubusercontent.com/anblt/extensible-file-processor/master/docs/FileProcessorTest.png)
